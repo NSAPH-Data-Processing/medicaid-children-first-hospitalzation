@@ -23,6 +23,8 @@ SELECT DISTINCT ON (bene_id) -- choose only unique bene_id on their earliest adm
   ORDER BY bene_id, admission_date ASC 
 ```
 
+Note that this means each individual contributes to the count at most **once**. For example, if interested in ICD codes 290-319, and that Patient A presents ICD-9 290.1 on 1/1/2001, and presents ICD-9 315.0 on 6/15/2001, only the hospitalization on 1/1/2001 will be counted; even though on 6/15/2001 was Patient A's first hospitalization for 315.0.
+
 ## Data methods:
 
 Frequency of all ICD codes are extracted by `unnest()` in PSQL build-in functions. To get primary/secondary diagnosis, `diagnosis` column are type `ARRAY` and therefore can be indexed. The order of ICD codes within each array innately indicate primary dignosis, secondary diagnosis, and so on.

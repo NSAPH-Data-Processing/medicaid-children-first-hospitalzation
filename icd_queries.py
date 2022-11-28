@@ -272,6 +272,62 @@ def get_freq_primary_icd_counts_cust_icd(age_low, age_high):
     '''
         return sql_query
 
+    
+def get_all_secondary_icd_counts_by_icd(age_low, age_high):
+    """
+    generates a query for an age group, of their first hospitalization to find the most frequent diagnoses of all ICDs.
+    
+    Note: for primary ICD, replace `unnest(diagnosis[2:])` to `diagnosis[1]`
+    """
+        
+    SQL = f'''
+  SELECT * FROM 
+  (
+    SELECT diag, COUNT(diag) AS diag_count  FROM 
+      (
+      SELECT DISTINCT ON (bene_id) -- choose only unique bene_id on their earliest admission_Date (matching ORDER BY clause)
+              bene_id, admission_date, diag, age  FROM 
+        (
+          SELECT unnest(diagnosis[2:]) as diag, year, admission_date, ad.bene_id, DATE_PART('year', admission_date) - DATE_PART('year', dob) AS age FROM medicaid.admissions AS ad
+          INNER JOIN medicaid.beneficiaries AS bene ON ad.bene_id = bene.bene_id 
+        )
+        AS all_diag
+        -- filter for age
+        WHERE age IS NOT NULL AND age >= {age_low} AND age <= {age_high} 
+        ORDER BY bene_id, admission_date ASC
+      ) AS cust_diag_first_hosp
+      GROUP BY diag
+      ORDER BY COUNT(diag) DESC
+    ) AS counts
+  WHERE diag_count > 10; -- avoid disclosing counts <=10 per CMS guideline
+    '''
+    
+    return SQL
+
+def get_all_secondary_icd_counts(age_low, age_high):
+    """
+    generates a query to find the total count of first hospitalization for an age group
+    Returns one integer
+    
+    Note: for primary ICD, replace `unnest(diagnosis[2:])` to `diagnosis[1]`
+    """
+    SQL = f'''
+        SELECT COUNT(*) AS total_hosp FROM 
+    (
+    SELECT DISTINCT ON (bene_id) -- choose only unique bene_id on their earliest admission_Date (matching ORDER BY clause)
+      bene_id, admission_date, diag, age  FROM 
+    (
+    SELECT unnest(diagnosis[2:]) as diag, year, admission_date, ad.bene_id, DATE_PART('year', admission_date) - DATE_PART('year', dob) AS age FROM medicaid.admissions AS ad
+    INNER JOIN medicaid.beneficiaries AS bene ON ad.bene_id = bene.bene_id 
+    )
+    AS all_diag
+    -- filter for age
+    WHERE age IS NOT NULL AND age >= {age_low} AND age <= {age_high}  
+
+    ORDER BY bene_id, admission_date ASC
+    ) AS counts
+    '''
+
 def main():
     outcomes = get_outcomes('icd_custom.json')
     
