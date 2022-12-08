@@ -7,6 +7,14 @@ This is a data request made by Dr. Antonella Zanobetti.
 ## Follow up request:
 A frequency count of ICD codes between 290 and 319 in Medicaid through years 1999-2012, frequency count of primary and secondary on all hospitalizations in kids 0-18 year old. Divided into groups 0-12, and 13-18
 
+## Final request:
+On the individual level, extract all beneficiaries with ICD codes of interest, and classify whether the diagnosis is one of the five diseases 
+- Major depressive disorder 
+- Anxiety 
+- Disturbance of emotions specific to childhood 
+- Adolescence and adjustment reaction
+- Disturbance of conduct 
+
 ## Data descriptors:
 
 location: `/n/dominici_nsaph_l3/Lab/projects/medicaid_children_icd/data`
@@ -14,7 +22,14 @@ location: `/n/dominici_nsaph_l3/Lab/projects/medicaid_children_icd/data`
 Each CSV file is in descending order of the ICD codes count. Filenames indicate whether the counts came from 1) all ICD codes, 2) primary diagnosis only, or 3) secondary diagnosis only. In addition, the two numbers after `age` indicate the age range. E.g., `primary_icd_age_0_12.csv` contains counts of primary ICD codes in descending order for beneficiaries whose age are between 0 and 12, inclusively.
 
 ## Definitions
+### Defining admission counts
+Variable `n_th_admission` is defined as the number of admissions each beneficiary has been admitted for qualifying ICD codes. That is, if an admission does not contain any of the qualifying ICD codes (for example diagnosis=[100.0, 693.0, NULL, NULL]), that admission record will not be counted.
+
+The counts are NOT grouped by ICD codes. That is, if Patient A presents ICD-9 296.2 on 12/15/2001, and presents ICD-9 315.0 on 6/15/2002, the 12/15/2001 visit will be Patient A's first (1) admission, and the 6/15/2002 visit will be Patient A's second (2) admission. Even though on 6/15/2002 was Patient A's first hospitalization for 315.0.
+
 ### Defining first hospitalization
+**This only applies to analysis done on the counts level, and not the individual level.**
+
 Here we define first hospitalization as the first record per beneficiary in **all** years of Medicaid records. This is achieved by logic
 ```SQL
 SELECT DISTINCT ON (bene_id) -- choose only unique bene_id on their earliest admission_Date (matching ORDER BY clause)
