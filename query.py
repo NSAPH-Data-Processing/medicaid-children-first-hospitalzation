@@ -29,6 +29,8 @@ from nsaph.db import Connection
 from pandas import DataFrame
 
 ######Enter your query here######
+from icd_queries_individual import get_outcomes, get_cust_icd_by_age
+
 
 #################################
 
@@ -52,30 +54,20 @@ def query(db_ini_file: str, db_conn_name: str, SQL):
 
 if __name__ == '__main__':
 #   
-    age = [[0, 18], [0, 12], [13, 18]]
-#     age = [[0, 18]] # temp, exploratory
+#     age = [[0, 18], [0, 12], [13, 18]]
+    age = [[0, 18]] # temp, exploratory
+    outcomes = get_outcomes('icd_custom.json')
+    custom_icd = outcomes['icd_cust_range']['icd9']
     
     for sub_age in age:
         age_low = sub_age[0]
         age_high = sub_age[1]
-        SQL = f'''
-        SELECT COUNT(*) AS total_hosp FROM 
-    (
-    SELECT DISTINCT ON (bene_id) -- choose only unique bene_id on their earliest admission_Date (matching ORDER BY clause)
-      bene_id, admission_date, diag, age  FROM 
-    (
-    SELECT diagnosis[1] as diag, year, admission_date, ad.bene_id, DATE_PART('year', admission_date) - DATE_PART('year', dob) AS age FROM medicaid.admissions AS ad
-    INNER JOIN medicaid.beneficiaries AS bene ON ad.bene_id = bene.bene_id 
-    )
-    AS all_diag
-    -- filter for age
-    WHERE age IS NOT NULL AND age >= {age_low} AND age <= {age_high}  
+        
+        
+        SQL = get_cust_icd_by_age(age_low, age_high, custom_icd)
 
-    ORDER BY bene_id, admission_date ASC
-    ) AS counts
-    '''
         print(SQL)
         df_test = query(sys.argv[1], sys.argv[2], SQL)
-        df_test.to_csv(f"/n/dominici_nsaph_l3/Lab/projects/medicaid_children_icd/data/icd_290_319/first_hosp/primary_icd_one_number_290_319_age_{age_low}_{age_high}.csv", index=False)
+        df_test.to_csv(f"/n/dominici_nsaph_l3/Lab/projects/medicaid_children_icd/data/individual_records/test_icd.csv", index=False)
    
                 

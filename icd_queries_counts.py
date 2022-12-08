@@ -240,13 +240,12 @@ def get_freq_primary_icd_counts_cust_icd(age_low, age_high):
     
 
     def get_first_hosp_freq_secondary_icd_counts_cust_icd(age_low, age_high):
-    """
-    generates a query for an age group, of their first hospitalization to find the most frequent diagnoses of the interested ICD codes passed in.
+#     """
+#     generates a query for an age group, of their first hospitalization to find the most frequent diagnoses of the interested ICD codes passed in.
     
-    Note: for primary ICD, replace `unnest(diagnosis[2:])` to `diagnosis[1]`
-    """
-        
-         sql_query = f'''
+#     Note: for primary ICD, replace `unnest(diagnosis[2:])` to `diagnosis[1]`
+#     """
+        sql_query = f'''
   SELECT * FROM 
   (
     SELECT diag, COUNT(diag) AS diag_count  FROM 
@@ -330,6 +329,9 @@ def get_all_secondary_icd_counts(age_low, age_high):
 
 def main():
     outcomes = get_outcomes('icd_custom.json')
+    custome_icd = outcomes['icd_cust_range']['icd9']
+
+    print(get_psyc_count(2008, 0, 18, custome_icd))
     
     # find out what are the keys for this json
 #     print(outcomes.keys())
@@ -340,7 +342,7 @@ def main():
 #     print(icd_str)
 #     print('type', type(psyc_icd))
     
-    print(get_freq_primary_icd_counts(0, 18))
+#     print(get_freq_primary_icd_counts(0, 18))
     # get_psyc_count(2012, 10, 18, psyc_icd)
 #     print(get_psyc_count(2012, 10, 16, custome_icd))
 #     print(get_freq_primary_icd_counts_cust_icd(10, 16))
