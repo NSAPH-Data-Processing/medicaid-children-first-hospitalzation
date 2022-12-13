@@ -26,7 +26,7 @@ Each CSV file is in descending order of the ICD codes count. Filenames indicate 
 Similar to all_icd_counts, except the ICD is limited to between 290 and 319.
 
 ### individual_records
-This contains individual level data where individuals diagnosis with ICD extracted from `icd_custom_Dec12_2022.json` is placed into `disease_classification_demographics.csv` with each disease classification (see disease classifications [below](#file-`icd_custom_Dec12_2022.json`)). The available columns are:
+This contains individual level data where individuals diagnosis with ICD extracted from `icd_custom_Dec12_2022.json` is placed into `disease_classification_demographics.csv` with each disease classification (see disease classifications [below](#file-icd_custom_dec12_2022json)). The available columns are:
 ```
 'diag1', 'diag2', 'diag3', 'diag4', 'diag5', 'diag6', 'diag7', 'diag8','diag9', 'diagnosis', 'year', 'admission_date', 'bene_id','n_th_admission', 'depression', 'anxiety', 'emotion_disturb', 'adole_reaction', 'disturb_conduct', 'zip', 'race_ethnicity_code', 'sex', 'age'
 ```
