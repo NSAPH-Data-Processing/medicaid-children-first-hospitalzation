@@ -29,7 +29,7 @@ from nsaph.db import Connection
 from pandas import DataFrame
 
 ######Enter your query here######
-from icd_queries_individual import get_outcomes, get_cust_icd_by_age
+from icd_queries_individual import *
 
 
 #################################
@@ -56,8 +56,8 @@ if __name__ == '__main__':
 #   
 #     age = [[0, 18], [0, 12], [13, 18]]
     age = [[0, 18]] # temp, exploratory
-    outcomes = get_outcomes('icd_custom.json')
-    custom_icd = outcomes['icd_cust_range']['icd9']
+    outcomes = get_outcomes('../icd_custom_Dec12_2022.json')
+    custom_icd = outcomes['icd_cust_range']['icd9_all']
     
     for sub_age in age:
         age_low = sub_age[0]
@@ -68,6 +68,6 @@ if __name__ == '__main__':
 
         print(SQL)
         df_test = query(sys.argv[1], sys.argv[2], SQL)
-        df_test.to_csv(f"/n/dominici_nsaph_l3/Lab/projects/medicaid_children_icd/data/individual_records/test_icd.csv", index=False)
+        df_test.to_csv(f"/n/dominici_nsaph_l3/Lab/projects/medicaid_children_icd/data/individual_records/disease_classification_demographics.csv", index=False)
    
                 
